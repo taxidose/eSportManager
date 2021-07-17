@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Spielerbörse{% endblock %}
+{% block headline %}Spielerbörse{% endblock %}
+
+
+{% block content %}
+
+<table class="table table-borderless table-sm table-hover">
+    <thead>
+    <tr>
+        <th scope="col">Nickname</th>
+        <th scope="col">Position</th>
+        <th scope="col">Mechanische Fähigkeit</th>
+        <th scope="col">Strategische Fähigkeit</th>
+        <th scope="col">Spielkenntnis</th>
+        <th scope="col">Reaktion</th>
+        <th scope="col">Preis</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for player in players %}
+        <tr>
+            <td>{{ player.nickname }}</td>
+            <td>{{ player.position }}</td>
+            <td>{{ player.mechanical_skill }}</td>
+            <td>{{ player.tactical_skill }}</td>
+            <td>{{ player.game_knowledge }}</td>
+            <td>{{ player.reaction }}</td>
+            <td>{{ player.value }}</td>
+            <td><a class="btn btn-outline-light btn-sm" href="/buy/{{ player.id }}" role="button">Kaufen</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

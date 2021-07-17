@@ -1,0 +1,20 @@
+{% etends "base.html" %}
+
+{% block title}Teamerstellung{% endblock %}
+{% block headline}Teamerstellung{% endblock %}
+
+{% block content %}
+<form method="POST">
+    <div class="form-group">
+        <label for="teamname">Teamname</label>
+        <input type="text" class="form-control" id="teamname" name="teamname" placeholder="Teamname"/>
+        <br>
+        <label for="description">Teambeschreibung (optional)</label>
+        <input type="text" class="form-control" id="description" name="description" placeholder="Beschreibung (optional)"/>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Team gründen</button>
+    <a class="btn btn-secondary" href="/">Abbrechen</a>
+</form>
+
+{% endblock %}
