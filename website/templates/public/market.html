@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}Spielerbörse{% endblock %}
-{% block headline %}Spielerbörse{% endblock %}
+{% block headline %}Spielerbörse (Verfügbares Geld: {{ userinfo.money|int }}€){% endblock %}
 
 
 {% block content %}

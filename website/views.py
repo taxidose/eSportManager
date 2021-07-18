@@ -30,7 +30,7 @@ def team():
     team_players = Player.query.filter_by(team_id=user_team.id).order_by(Player.position.asc()).all()
     team_value = db.session.query(func.sum(Player.value)).filter_by(team_id=user_team.id).all()[0][0]
 
-    # show teamwert: 0€ instad of None
+    # show teamwert: 0 € instad of None €
     if not team_value:
         team_value = 0
 
@@ -103,7 +103,9 @@ def market():
     players_on_market = \
         Player.query.filter_by(on_market=True).order_by(Player.position.asc()).order_by(Player.value.asc()).all()
 
-    return render_template("/public/market.html", user=current_user, players=players_on_market)
+    user_info = User.query.filter_by(id=current_user.id).first()
+
+    return render_template("/public/market.html", user=current_user, userinfo=user_info, players=players_on_market)
 
 
 
