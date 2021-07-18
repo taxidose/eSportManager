@@ -9,7 +9,7 @@ class User(db.Model, UserMixin):
     nickname = db.Column(db.String(40), unique=True, nullable=False)
     password = db.Column(db.String(40), nullable=False)
     email = db.Column(db.String(40), unique=True, nullable=False)
-    money = db.Column(db.Float(40))
+    money = db.Column(db.Float(40), default=100_000)
     reg_date = db.Column(db.DateTime(timezone=True), default=func.now())
     is_admin = db.Column(db.Boolean)
 

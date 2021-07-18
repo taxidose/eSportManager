@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Team{% endblock %}
+{% block headline %}{{ team.name }} &nbsp;&nbsp;&nbsp;<img src="../../static/img/money.png"> Verfügbares Geld: {{ userinfo.money|int }} € | Teamwert: {{ teamvalue }} €{% endblock %}
+
+
+{% block content %}
+
+<table class="table table-borderless table-hover">
+    <thead>
+    <tr>
+        <th scope="col"></th>
+        <th scope="col">Nickname</th>
+        <th scope="col">Position</th>
+        <th scope="col">Mechanische Fähigkeit</th>
+        <th scope="col">Strategische Fähigkeit</th>
+        <th scope="col">Spielkenntnis</th>
+        <th scope="col">Reaktion</th>
+        <th scope="col">Wert</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for player in players %}
+    <tr>
+        <td><img src="../../static/img/head1.png" height="30"></td>
+        <td>{{ player.nickname }}</td>
+        <td>{{ player.position }}</td>
+        <td>{{ player.mechanical_skill }}</td>
+        <td>{{ player.tactical_skill }}</td>
+        <td>{{ player.game_knowledge }}</td>
+        <td>{{ player.reaction }}</td>
+        <td>{{ player.value }}</td>
+        <td>
+            <div class="dropdown">
+                <a class="btn btn-sm btn-outline-light dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    verwalten
+                </a>
+
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <li><a class="dropdown-item" href="#">Details</a></li>
+                    <li><a class="dropdown-item" href="#">Training</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <!-- Button trigger modal -->
+                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#confirmSellModal">Verkaufen</a>
+                    </li>
+                </ul>
+            </div>
+        </td>
+    </tr>
+    <!-- Modal -->
+    <div class="modal fade" id="confirmSellModal" tabindex="-1" aria-labelledby="confirmSellModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmSellModalLabel">Verkauf bestätigen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body justify-content-center">
+                    <img src="../../static/img/attention.png" height="40"> {{ player.nickname }} ({{ player.name }}) wirklich verkaufen?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <a class="btn btn-sm btn-outline-success" role="button" href="/sell/{{ player.id }}">Bestätigen</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock %}
