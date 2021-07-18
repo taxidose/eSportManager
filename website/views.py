@@ -109,6 +109,8 @@ def market():
 
 
 
+def page_not_found(e):
+    return render_template('public/404.html', user=current_user), 404
 
 
 

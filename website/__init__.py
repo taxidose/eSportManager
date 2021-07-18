@@ -22,9 +22,9 @@ def create_app():
     app.register_blueprint(auth, url_prefix="/")
     app.register_blueprint(admin, url_prefix="/admin")
 
-    #from .views import page_not_found
+    from .views import page_not_found
 
-    #app.register_error_handler(404, page_not_found)
+    app.register_error_handler(404, page_not_found)
 
     from .models import User
 
