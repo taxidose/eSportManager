@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %} Herausfordern {% endblock %}
+{% block headline %} Anderes Team herausfordern {% endblock %}
+
+
+{% block content %}
+
+
+
+<table class="table table-borderless table-sm table-hover">
+    <thead>
+    <tr>
+
+        <th scope="col">Team</th>
+        <th scope="col">Bewertung</th>
+        <th scope="col">Teamwert</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for team in teams %}
+        <tr>
+            <td><img src="../../static/img/nigma.png" height="40"> {{ team.name }}</td>
+            <td>tbd</td>
+            <td>tbd</td>
+
+            <td><a class="btn btn-outline-light btn-sm" href="/match/create/{{ userteam.id }}-{{ team.id }}" role="button">Herausfordern</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

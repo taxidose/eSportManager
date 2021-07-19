@@ -1,10 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
-from .models import Player, Team, User
+from .models import Player, Team, User, Match
 from . import db
 from sqlalchemy.sql import func
 import logging
-
 
 views = Blueprint("views", __name__)
 
@@ -50,7 +49,6 @@ def sell(playerid):
     seller_team = Team.query.filter_by(owner_id=current_user.id).first()
     user = User.query.filter_by(id=current_user.id).first()
 
-
     # only sell if player is in current user's team
 
     try:
@@ -66,7 +64,6 @@ def sell(playerid):
 
     finally:
         return redirect(url_for("views.team"))
-
 
 
 @login_required
@@ -108,9 +105,60 @@ def market():
     return render_template("/public/market.html", user=current_user, userinfo=user_info, players=players_on_market)
 
 
+@login_required
+@views.route("/challenge")
+def challenge():
+    if not current_user.is_authenticated:
+        return redirect(url_for("auth.landing"))
+
+    user_info = User.query.filter_by(id=current_user.id).first()
+    user_team = Team.query.filter_by(owner_id=current_user.id).first()
+
+    # all other teams
+    teams = Team.query.filter(Team.owner_id != current_user.id).all()
+
+    return render_template("/public/challenge.html", user=current_user, userinfo=user_info,
+                           teams=teams, userteam=user_team)
+
+
+@login_required
+@views.route("/match")
+def match():
+    if not current_user.is_authenticated:
+        return redirect(url_for("auth.landing"))
+
+
+@login_required
+@views.route("/match/create/<int:team1_id>-<int:team2_id>")
+def create_match(team1_id, team2_id):
+    if not current_user.is_authenticated:
+        return redirect(url_for("auth.landing"))
+
+    # check if there is currently an open match pending
+    match_pending = Match.query.filter(
+        ((Match.team1 == team1_id) & (Match.team2 == team2_id) & (Match.status != "finished")) |
+        ((Match.team2 == team1_id) & (Match.team1 == team2_id) & (Match.status != "finished"))
+        ).first()
+
+    # print(f"{match_pending=}")
+    # print(f"{match_pending.team1=}")
+    # print(f"{match_pending.team2=}")
+    # print(f"{match_pending.id=}")
+    # print(f"{match_pending.status=}")
+
+    if match_pending:
+        flash("Team kann nicht herausgefordert werden, da noch ein offenes Match existiert.", category="error")
+        return redirect(url_for("views.challenge"))
+
+    new_match = Match(team1=team1_id, team2=team2_id)
+    db.session.add(new_match)
+    db.session.commit()
+
+    flash("Herausforderung versendet.", category="success")
+    logging.info(f"Match between team {team1_id} & team {team2_id} created.")
+
+    return redirect(url_for("views.challenge"))
+
 
 def page_not_found(e):
     return render_template('public/404.html', user=current_user), 404
-
-
-

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %} Match {% endblock %}
+{% block headline %} Match {% endblock %}
+
+
+{% block content %}
+
+
+{% if match.status == "challenged" %}
+
+<p>Dein Team {{ match.team2 }} wurde von {{ match.team1 }} herausgefordert.</p>
+<a class="btn btn-outline-success btn-sm" href="#" role="button">Annehmen</a>
+<a class="btn btn-outline-danger btn-sm" href="#" role="button">Ablehnen</a>
+
+{% endif %}
+
+
+{% if match.status == "accepted" %}
+
+<p>{{ match.team2 }} spielt gerade gegen {{ match.team1 }}.</p>
+
+{% endif %}
+
+
+{% if match.status == "finished" %}
+
+{% endif %}
+
+<p>{{ match.winner }} hat das Spiel gewonnen.</p>
+
+{% endblock %}

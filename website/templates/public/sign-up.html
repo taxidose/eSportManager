@@ -6,7 +6,7 @@
 
 {% block content %}
 <form method="POST">
-    <h3 align="center">Sign Up</h3>
+
     <div class="form-group">
         <label for="name">Userame</label>
         <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name"/>
@@ -28,8 +28,8 @@
         <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm Password"/>
     </div>
     <br/>
-    <button type="submit" class="btn btn-primary">Submit</button>
-
+    <button type="submit" class="btn btn-outline-primary">Submit</button>
+    <a class="btn btn-outline-secondary" role="button" href="/landing">Abbrechen</a>
 </form>
 
 {% endblock %}

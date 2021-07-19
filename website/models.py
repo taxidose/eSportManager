@@ -57,9 +57,11 @@ class TeamSponsor(db.Model):
 
 class Match(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    team1 = db.Column(db.String(50), db.ForeignKey("team.id"))
-    team2 = db.Column(db.String(50), db.ForeignKey("team.id"))
-    winner = db.Column(db.String(50), db.ForeignKey("team.id"))
+    team1 = db.Column(db.Integer, db.ForeignKey("team.id"))
+    team2 = db.Column(db.Integer, db.ForeignKey("team.id"))
+    winner = db.Column(db.Integer, db.ForeignKey("team.id"))
+    status = db.Column(db.Enum("challenged", "accepted", "finished"), default=("challenged"))
+    timestamp = db.Column(db.DateTime(timezone=True), default=func.now())
 
 
 class Player(db.Model):
