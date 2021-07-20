@@ -62,14 +62,8 @@ def update_market(name_list=None, player_amount=50) -> None:
 
     # add player to player table with attribut on_market = True
     db.session.add_all(player_list)
-    # for player in player_list:
-    #     db.session.execute(f"INSERT INTO player(nickname, name, bday, value, xp, position, reaction, technical_skill, tactical_skill, game_knowledge, VALUES ({player.nickname}, {player.name}, {player.bday}, {player.value}, {player.xp} ,{player.position} , {player.reaction} , {player.technical_skill} ,{player.tactical_skill} , {player.game_knowledge})")
-
     db.session.commit()
 
     logging.info(f"{len(player_list)} new players created...")
-
-
-
 
 

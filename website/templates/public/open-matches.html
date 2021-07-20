@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %} Offene Spiele {% endblock %}
+{% block headline %} Offene Spiele {% endblock %}
+
+
+{% block content %}
+
+<table class="table table-borderless table-sm table-hover">
+    <thead>
+    <tr>
+        <th scope="col">Gegner</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for match in openmatches %}
+        {% if match.status == "challenged" %}
+            {% if match.team1_id == userteam.id %}
+            <tr>
+                <td><img src="../../static/img/nigma.png" height="40">{{ match.team2_name }}</td>
+                <td>tbd</td>
+                <td>tbd</td>
+
+                <td><a class="btn btn-outline-danger btn-sm" href="/match/cancel/{{ match.id }}" role="button">Abbrechen</a></td>
+            </tr>
+            {% endif %}
+
+            {% if match.team2_id == userteam.id %}
+            <tr>
+                <td><img src="../../static/img/nigma.png" height="40">{{ match.team1_name }}</td>
+                <td>tbd</td>
+                <td>tbd</td>
+
+                <td><a class="btn btn-outline-success btn-sm" href="/match/accept/{{ match.id }}" role="button">Annehmen</a></td>
+            </tr>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

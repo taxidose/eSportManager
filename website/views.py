@@ -4,6 +4,7 @@ from .models import Player, Team, User, Match
 from . import db
 from sqlalchemy.sql import func
 import logging
+from .match_sim import simulate_match
 
 views = Blueprint("views", __name__)
 
@@ -106,6 +107,21 @@ def market():
 
 
 @login_required
+@views.route("/open-matches")
+def open_matches():
+    if not current_user.is_authenticated:
+        return redirect(url_for("auth.landing"))
+
+    # user = User.query.filter_by(id=current_user.id)
+    user_team = Team.query.filter_by(owner_id=current_user.id).first()
+    open_matches_user = Match.query.filter(
+        ((Match.team1_id == user_team.id) | (Match.team2_id == user_team.id)) & Match.status != "finished").all()
+
+    return render_template("public/open-matches.html", user=current_user, openmatches=open_matches_user,
+                           userteam=user_team)
+
+
+@login_required
 @views.route("/challenge")
 def challenge():
     if not current_user.is_authenticated:
@@ -122,13 +138,6 @@ def challenge():
 
 
 @login_required
-@views.route("/match")
-def match():
-    if not current_user.is_authenticated:
-        return redirect(url_for("auth.landing"))
-
-
-@login_required
 @views.route("/match/create/<int:team1_id>-<int:team2_id>")
 def create_match(team1_id, team2_id):
     if not current_user.is_authenticated:
@@ -136,9 +145,9 @@ def create_match(team1_id, team2_id):
 
     # check if there is currently an open match pending
     match_pending = Match.query.filter(
-        ((Match.team1 == team1_id) & (Match.team2 == team2_id) & (Match.status != "finished")) |
-        ((Match.team2 == team1_id) & (Match.team1 == team2_id) & (Match.status != "finished"))
-        ).first()
+        ((Match.team1_id == team1_id) & (Match.team2_id == team2_id) & (Match.status != "finished")) |
+        ((Match.team2_id == team1_id) & (Match.team1_id == team2_id) & (Match.status != "finished"))
+    ).first()
 
     # print(f"{match_pending=}")
     # print(f"{match_pending.team1=}")
@@ -150,14 +159,64 @@ def create_match(team1_id, team2_id):
         flash("Team kann nicht herausgefordert werden, da noch ein offenes Match existiert.", category="error")
         return redirect(url_for("views.challenge"))
 
-    new_match = Match(team1=team1_id, team2=team2_id)
+    team1 = Team.query.filter_by(id=team1_id).first()
+    team2 = Team.query.filter_by(id=team2_id).first()
+
+    new_match = Match(team1_id=team1_id, team2_id=team2_id, team1_name=team1.name, team2_name=team2.name)
     db.session.add(new_match)
     db.session.commit()
 
     flash("Herausforderung versendet.", category="success")
-    logging.info(f"Match between team {team1_id} & team {team2_id} created.")
+    logging.info(f"Match between team {team1.name} (id: {team1_id}) & team {team2.name} (id: {team2_id}) created.")
 
     return redirect(url_for("views.challenge"))
+
+
+@login_required
+@views.route("/match/cancel/<int:matchid>")
+def cancel_match(matchid):
+    if not current_user.is_authenticated:
+        return redirect(url_for("auth.landing"))
+
+    match = Match.query.filter_by(id=matchid).first()
+    user_team = Team.query.filter_by(owner_id=current_user.id).first()
+
+    if match.team1_id != user_team.id and match.team2_id != user_team.id:
+        flash("Match kann nicht abgebrochen werden (Userteam nicht beteiligt).")
+        return redirect(url_for("views.open_matches"))
+
+    db.session.delete(match)
+    db.session.commit()
+
+    flash(f"Match gegen {match.team1_name} abgelehnt.", category="success")
+    logging.info(f"Match {match.id} ({match.team1_name} vs. {match.team2_name} canceled")
+
+    return redirect(url_for("views.open_matches"))
+
+
+@login_required
+@views.route("/match/accept/<int:matchid>")
+def accept_match(matchid):
+    if not current_user.is_authenticated:
+        return redirect(url_for("auth.landing"))
+
+    match = Match.query.filter_by(id=matchid).first()
+    user_team = Team.query.filter_by(owner_id=current_user.id).first()
+
+    if match.team1_id != user_team.id and match.team2_id != user_team.id:
+        flash("Match kann nicht angenommen werden (Userteam nicht beteiligt).")
+        return redirect(url_for("views.open_matches"))
+
+    match.status = "accepted"
+    db.session.commit()
+
+    flash(f"Match gegen {match.team1_name} angenommen.", category="success")
+    logging.info(f"Match {match.id} ({match.team1_name} vs. {match.team2_name} accepted")
+
+    simulate_match(match.id)
+
+    return redirect(url_for("views.open_matches"))
+
 
 
 def page_not_found(e):

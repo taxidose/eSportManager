@@ -31,6 +31,8 @@ class Team(db.Model):
     def __repr__(self):
         return "<Team %r>" % self.name
 
+    # TODO: implement (team-)moral
+
 
 class TeamSponsor(db.Model):
     team_name = db.Column(db.String(50), db.ForeignKey("team.name", ondelete="CASCADE"), primary_key=True)
@@ -57,8 +59,10 @@ class TeamSponsor(db.Model):
 
 class Match(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    team1 = db.Column(db.Integer, db.ForeignKey("team.id"))
-    team2 = db.Column(db.Integer, db.ForeignKey("team.id"))
+    team1_id = db.Column(db.Integer, db.ForeignKey("team.id"))
+    team1_name = db.Column(db.String, db.ForeignKey("team.name"))
+    team2_id = db.Column(db.Integer, db.ForeignKey("team.id"))
+    team2_name = db.Column(db.String, db.ForeignKey("team.name"))
     winner = db.Column(db.Integer, db.ForeignKey("team.id"))
     status = db.Column(db.Enum("challenged", "accepted", "finished"), default=("challenged"))
     timestamp = db.Column(db.DateTime(timezone=True), default=func.now())
