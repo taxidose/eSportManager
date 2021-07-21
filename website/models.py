@@ -76,15 +76,17 @@ class Player(db.Model):
     nationality = db.Column(db.String(2))
     wealth = db.Column(db.Integer)
     value = db.Column(db.Integer)
-    xp = db.Column(db.Integer)
+
     position = db.Column(db.SmallInteger)
 
     on_market = db.Column(db.Boolean)
 
+    xp = db.Column(db.Integer)
     reaction = db.Column(db.SmallInteger)
     mechanical_skill = db.Column(db.SmallInteger)
     tactical_skill = db.Column(db.SmallInteger)
     game_knowledge = db.Column(db.SmallInteger)
+
     team_id = db.Column(db.Integer, db.ForeignKey("team.id"))
 
 

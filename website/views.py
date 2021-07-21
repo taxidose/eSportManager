@@ -155,9 +155,10 @@ def create_match(team1_id, team2_id):
     # print(f"{match_pending.id=}")
     # print(f"{match_pending.status=}")
 
-    if match_pending:
-        flash("Team kann nicht herausgefordert werden, da noch ein offenes Match existiert.", category="error")
-        return redirect(url_for("views.challenge"))
+    # TODO: activate check after testing
+    # if match_pending:
+    #     flash("Team kann nicht herausgefordert werden, da noch ein offenes Match existiert.", category="error")
+    #     return redirect(url_for("views.challenge"))
 
     team1 = Team.query.filter_by(id=team1_id).first()
     team2 = Team.query.filter_by(id=team2_id).first()
@@ -217,6 +218,19 @@ def accept_match(matchid):
 
     return redirect(url_for("views.open_matches"))
 
+
+@login_required
+@views.route("/match-history")
+def match_history():
+    if not current_user.is_authenticated:
+        return redirect(url_for("auth.landing"))
+
+    user_team = Team.query.filter_by(owner_id=current_user.id).first()
+    matches = Match.query.filter(
+        ((Match.team1_id == user_team.id) | (Match.team2_id == user_team.id)) & (Match.status == "finished")).order_by(Match.timestamp.desc()).all()
+
+    return render_template("/public/match-history.html", user=current_user, matchhistory=matches,
+                           userteam=user_team)
 
 
 def page_not_found(e):

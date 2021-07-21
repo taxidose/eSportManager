@@ -15,6 +15,9 @@ def simulate_match(match_id, bo=3.0) -> None:
     team1_stats = get_team_stats(team1_players)
     team2_stats = get_team_stats(team2_players)
 
+    print(f"{team1_stats=}")
+    print(f"{team2_stats=}")
+
     win_count_team1 = 0
     win_count_team2 = 0
 
@@ -22,15 +25,23 @@ def simulate_match(match_id, bo=3.0) -> None:
         eff_stats_team1 = get_effective_team_stats(team1_stats)
         eff_stats_team2 = get_effective_team_stats(team2_stats)
 
+        print(f"{eff_stats_team1=}")
+        print(f"{eff_stats_team2=}")
+
         if eff_stats_team1 > eff_stats_team2:
             win_count_team1 += 1
         else:
             win_count_team2 += 1
 
+        print(f"{win_count_team1=}")
+        print(f"{win_count_team2=}")
+
     if win_count_team1 > win_count_team2:
         match.winner = match.team1_id
+        print("win_count_team1 > win_count_team2")
     elif win_count_team1 < win_count_team2:
         match.winner = match.team2_id
+        print("win_count_team1 < win_count_team2")
     else:
         match.winner = 0
 
@@ -42,10 +53,6 @@ def simulate_match(match_id, bo=3.0) -> None:
     db.session.commit()
 
     logging.info(f"DB updated after finishing match {match.id}")
-
-
-
-
 
 
 def get_players(team_id: int) -> list[Player]:
@@ -65,24 +72,30 @@ def get_team_stats(players: list[Player]) -> dict[int]:
     total_mechanical_skill = 0
     total_tactical_skill = 0
     total_game_knowledge = 0
+    total_xp = 0
 
     for player in players:
         total_reaction += player.reaction
         total_mechanical_skill += player.mechanical_skill
         total_tactical_skill += player.tactical_skill
         total_game_knowledge += player.game_knowledge
+        total_xp += player.xp
 
     team_stats.update(
         {"reaction": total_reaction,
          "mechanical_skill": total_mechanical_skill,
          "tactical_skill": total_tactical_skill,
-         "game_knowledge": total_game_knowledge})
+         "game_knowledge": total_game_knowledge,
+         "xp": total_xp})
 
     return team_stats
 
 
 def get_effective_team_stats(team_stats: dict) -> int:
-    """Calculate effective stats. Return sum of ("randomized") stat (depending on the teams form on the day)"""
+    """Calculate effective stats. Return sum of ("randomized") total stats."""
+
+    # TODO: Problem effective stats <-> value
+    # value = int((reaction * 0.5 + technical_skill * 1.5 + tactical_skill * 1.5 + game_knowledge) * xp)
 
     stats_sum = 0
 

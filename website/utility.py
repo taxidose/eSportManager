@@ -15,7 +15,7 @@ def create_player(name=None, nickname=None) -> Player:
     if nickname is None:
         nickname = name.split()[0]  # TODO: generate proper nicknames
 
-    # create random bday betweend 1980 and 2005
+    # create random bday between 1980 and 2005
     start_date = datetime.date(year=1980, month=1, day=1)
     end_date = datetime.date(year=2006, month=1, day=1)
     bday = fake.date_between(start_date=start_date, end_date=end_date)

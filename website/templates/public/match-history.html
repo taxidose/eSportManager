@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Matchhistorie{% endblock %}
+{% block headline %}Matchhistorie{% endblock %}
+
+
+{% block content %}
+
+{% if matchhistory|length < 1 %}
+<p>Noch kein Match abgeschlossen.</p>
+{% else %}
+<table class="table table-borderless table-sm table-hover">
+    <thead>
+    <tr>
+        <th scope="col">Team 1</th>
+        <th scope="col">Team 2</th>
+        <th scope="col">Gewinner</th>
+        <th scope="col">Datum</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for match in matchhistory %}
+            {% if match.winner == userteam.id %}
+            <tr>
+                <td><img src="../../static/img/nigma.png" height="40">{{ match.team1_name }}</td>
+                <td><img src="../../static/img/nigma.png" height="40">{{ match.team2_name }}</td>
+                {% if match.winner == match.team1_id %}
+                <td style="color:green">{{ match.team1_name }}</td>
+                {% endif %}
+                {% if match.winner == match.team2_id %}
+                <td style="color:green">{{ match.team2_name }}</td>
+                {% endif %}
+                <td>{{ match.timestamp.strftime('%d.%m.%Y') }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td><img src="../../static/img/nigma.png" height="40">{{ match.team1_name }}</td>
+                <td><img src="../../static/img/nigma.png" height="40">{{ match.team2_name }}</td>
+                {% if match.winner == match.team1_id %}
+                <td style="color:red">{{ match.team1_name }}</td>
+                {% endif %}
+                {% if match.winner == match.team2_id %}
+                <td style="color:red">{{ match.team2_name }}</td>
+                {% endif %}
+                <td>{{ match.timestamp.strftime('%d.%m.%Y') }}</td>
+            </tr>
+            {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% endblock %}
