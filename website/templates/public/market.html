@@ -5,8 +5,7 @@
 
 
 {% block content %}
-
-<table class="table table-borderless table-sm table-hover">
+<table id="market_data" class="table table-borderless table-sm table-hover">
     <thead>
     <tr>
         <th scope="col">Nickname</th>
@@ -19,7 +18,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for player in players %}
+    <!--{% for player in players %}
         <tr>
             <td>{{ player.nickname }}</td>
             <td>{{ player.position }}</td>
@@ -30,8 +29,47 @@
             <td>{{ player.value }}</td>
             <td><a class="btn btn-outline-light btn-sm" href="/buy/{{ player.id }}" role="button">Kaufen</a></td>
         </tr>
-    {% endfor %}
+    {% endfor %}-->
     </tbody>
 </table>
+{% endblock %}
 
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+      $('#market_data').DataTable({
+        ajax: '/market/data',
+        serverSide: true,
+        language: {
+            searchPlaceholder: "Position oder Name",
+            "search": "Filter:",
+            "thousands": ".",
+            "info":  "Zeige _START_ bis _END_ von _TOTAL_ ",
+            "infoFiltered": "",
+            "lengthMenu": "Zeige _MENU_ Spieler",
+            "paginate": {
+            "first": "Erste",
+            "last": "Letzte",
+            "next": "Nächste",
+            "previous": "Vorherige",
+            "zeroRecords": "Keine passenden Spieler gefunden",
+            },
+        },
+        "pageLength": 25,
+        columns: [
+          {data: 'nickname'},
+          {data: 'position'},
+          {data: 'mechanical_skill'},
+          {data: 'tactical_skill',},
+          {data: 'game_knowledge'},
+          {data: 'reaction'},
+          {data: 'value'}
+        ],
+
+      });
+    });
+
+
+</script>
 {% endblock %}

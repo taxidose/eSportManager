@@ -89,6 +89,25 @@ class Player(db.Model):
 
     team_id = db.Column(db.Integer, db.ForeignKey("team.id"))
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nickname": self.nickname,
+            "name": self.name,
+            "bday": self.bday,
+            "nationality": self.nationality,
+            "wealth": self.wealth,
+            "value": self.value,
+            "position": self.position,
+            "on_market": self.on_market,
+            "xp": self.xp,
+            "reaction": self.reaction,
+            "mechanical_skill": self.mechanical_skill,
+            "tactical_skill": self.tactical_skill,
+            "game_knowledge": self.game_knowledge,
+            "team_id": self.team_id,
+        }
+
 
 class PlayerSkill(db.Model):
     player_id = db.Column(db.Integer, db.ForeignKey("player.id"), primary_key=True)

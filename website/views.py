@@ -98,12 +98,63 @@ def market():
     if not current_user.is_authenticated:
         return redirect(url_for("auth.landing"))
 
-    players_on_market = \
-        Player.query.filter_by(on_market=True).order_by(Player.position.asc()).order_by(Player.value.asc()).all()
-
+    # players_on_market = \
+    #     Player.query.filter_by(on_market=True).order_by(Player.position.asc()).order_by(Player.value.asc()).all()
+    #
     user_info = User.query.filter_by(id=current_user.id).first()
 
-    return render_template("/public/market.html", user=current_user, userinfo=user_info, players=players_on_market)
+    return render_template("/public/market.html", user=current_user, userinfo=user_info)
+
+
+@login_required
+@views.route("/market/data")
+def market_data():
+    if not current_user.is_authenticated:
+        return redirect(url_for("auth.landing"))
+
+    query = Player.query.filter_by(on_market=True)
+
+    # search filter
+    search = request.args.get("search[value]")
+    if search:
+        query = query.filter(db.or_(
+            Player.nickname.like(f"%{search}%"),
+            Player.position.like(f"%{search}%")
+        ))
+    total_filtered = query.count()
+
+    # sorting
+    order = []
+    i = 0
+    while True:
+        col_index = request.args.get(f"order[{i}][column]")
+        if col_index is None:
+            break
+        col_name = request.args.get(f"columns[{col_index}][data]")
+        if col_name not in ["nickname", "value", "position", "reaction", "mechanical_skill", "tactical_skill",
+                            "game_knowledge"]:
+            col_name = "position"
+        descending = request.args.get(f"order[{i}][dir]") == "desc"
+        col = getattr(Player, col_name)
+        if descending:
+            col = col.desc()
+        order.append(col)
+        i += 1
+    if order:
+        query = query.order_by(*order)
+
+    # pagination
+    start = request.args.get("start", type=int)
+    length = request.args.get("length", type=int)
+    query = query.offset(start).limit(length)
+
+    # response
+    return {
+        "data": [player.to_dict() for player in query],
+        "recordsFiltered": total_filtered,
+        "recordsTotal": Player.query.count(),
+        "draw": request.args.get("draw", type=int),
+    }
 
 
 @login_required
@@ -227,11 +278,12 @@ def match_history():
 
     user_team = Team.query.filter_by(owner_id=current_user.id).first()
     matches = Match.query.filter(
-        ((Match.team1_id == user_team.id) | (Match.team2_id == user_team.id)) & (Match.status == "finished")).order_by(Match.timestamp.desc()).all()
+        ((Match.team1_id == user_team.id) | (Match.team2_id == user_team.id)) & (Match.status == "finished")).order_by(
+        Match.timestamp.desc()).all()
 
     return render_template("/public/match-history.html", user=current_user, matchhistory=matches,
                            userteam=user_team)
 
 
 def page_not_found(e):
-    return render_template('public/404.html', user=current_user), 404
+    return render_template("public/404.html", user=current_user), 404

@@ -53,7 +53,7 @@ def update_market(name_list=None, player_amount=50) -> None:
     else:
         custom_player = []
 
-    default_player = [create_player() for i in range(player_amount - len(custom_player))]
+    default_player = [create_player() for _ in range(player_amount - len(custom_player))]
 
     player_list = default_player + custom_player
 
@@ -65,5 +65,3 @@ def update_market(name_list=None, player_amount=50) -> None:
     db.session.commit()
 
     logging.info(f"{len(player_list)} new players created...")
-
-
