@@ -130,7 +130,7 @@ body {
 
 table.dataTable thead > tr > th {
     padding-left: 30px !important;
-    padding-right: initial !important;
+    padding-right: auto !important;
 }
 
 table.dataTable thead .sorting:after,
